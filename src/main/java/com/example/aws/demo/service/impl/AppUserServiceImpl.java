@@ -9,10 +9,13 @@ import com.example.aws.demo.utils.AppUserUtils;
 import com.example.aws.demo.utils.ApplicationProperties;
 import com.nimbusds.jose.JOSEException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.ses.model.*;
@@ -32,7 +35,13 @@ public class AppUserServiceImpl implements AppUserService {
     @Autowired
     private ApplicationProperties applicationProperties;
 
+    @Autowired
+    private Environment environment;
+
     private SesClient sesClient;
+
+    private String YOUR_ACCESS_KEY = "AKIA4JLRBRT76IUV3YWA";
+    private String YOUR_SECRET_KEY = "rBRK0oFH6PXVZhOdNyqD2Z3lBo77tThhkh5JSZuN";
 
     public AppUserServiceImpl(SesClient sesClient) {
         this.sesClient = sesClient;
@@ -56,6 +65,7 @@ public class AppUserServiceImpl implements AppUserService {
                 String token  = jwtTokenUtils.getToken(appUser);
                 // Send email notification
                 sendLoginEmail(appUser.getEmail(), token);
+                System.out.println("hellolllllllllllllllllllllllll");
 
                 return token;
             }
@@ -93,16 +103,16 @@ public class AppUserServiceImpl implements AppUserService {
     public void YourServiceClass() {
         // Initialize SES client
         this.sesClient = SesClient.builder()
-                .region(Region.US_EAST_1)  // Change to your desired region
-                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .region(Region.AF_SOUTH_1)  // Change to your desired region
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(YOUR_ACCESS_KEY, YOUR_SECRET_KEY)))
                 .build();
     }
 
     private void sendLoginEmail(String recipientEmail, String token) {
         // Create a request to send an email
         SendEmailRequest emailRequest = SendEmailRequest.builder()
-                .source("your_verified_email@example.com") // Sender's email address (must be verified in SES)
-                .destination(Destination.builder().toAddresses(recipientEmail).build()) // Recipient's email address
+                .source("kasulapavan9@gmail.com") // Sender's email address (must be verified in SES)
+                .destination(Destination.builder().toAddresses("pavan.kasula@thrymr.net").build()) // Recipient's email address
                 .message(Message.builder()
                         .subject(Content.builder().data("Login Successful").build())
                         .body(Body.builder().text(Content.builder().data("You have successfully logged in. Your token is: " + token).build()).build())
