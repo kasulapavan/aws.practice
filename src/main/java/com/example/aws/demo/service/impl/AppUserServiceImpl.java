@@ -40,11 +40,14 @@ public class AppUserServiceImpl implements AppUserService {
 
     private SesClient sesClient;
 
-    private String YOUR_ACCESS_KEY = "AKIA4JLRBRT76IUV3YWA";
-    private String YOUR_SECRET_KEY = "rBRK0oFH6PXVZhOdNyqD2Z3lBo77tThhkh5JSZuN";
+    private String YOUR_ACCESS_KEY = "";
+    private String YOUR_SECRET_KEY = "";
 
     public AppUserServiceImpl(SesClient sesClient) {
-        this.sesClient = sesClient;
+        this.sesClient = SesClient.builder()
+                .region(Region.AF_SOUTH_1)  // Change to your desired region
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(YOUR_ACCESS_KEY, YOUR_SECRET_KEY)))
+                .build();
     }
 //    @Autowired
 //    private AppUserUtils appUserUtils;
@@ -111,11 +114,12 @@ public class AppUserServiceImpl implements AppUserService {
     private void sendLoginEmail(String recipientEmail, String token) {
         // Create a request to send an email
         SendEmailRequest emailRequest = SendEmailRequest.builder()
-                .source("kasulapavan9@gmail.com") // Sender's email address (must be verified in SES)
-                .destination(Destination.builder().toAddresses("pavan.kasula@thrymr.net").build()) // Recipient's email address
+
+                .source(" pavan.kasula@thrymr.net") // Sender's email address (must be verified in SES)
+                .destination(Destination.builder().toAddresses("kasulapavan9@gmail.com").build()) // Recipient's email address
                 .message(Message.builder()
                         .subject(Content.builder().data("Login Successful").build())
-                        .body(Body.builder().text(Content.builder().data("You have successfully logged in. Your token is: " + token).build()).build())
+                        .body(Body.builder().text(Content.builder().data("You have successfully logged in. Your token is: " ).build()).build())
                         .build())
                 .build();
 
